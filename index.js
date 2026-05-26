@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import userRouter from "./routers/userRouter.js";
 import jwt from "jsonwebtoken"
 import studentRouter from "./routers/studentRouter.js";
+import productRouter from "./routers/productRouter.js";
 
 const app= express()
 
@@ -11,6 +12,7 @@ app.use(bodyParser.json())
 
 app.use(
     (req,res,next)=>{
+        
         const value = req.header("Authorization")
         if(value != null){
             const token = value .replace("Bearer ","")
@@ -21,6 +23,7 @@ app.use(
                         {
                             message : "Unauthorized"
                         })
+
                 }else{
                    req.user = decoded
                         console.log(decoded)                 
@@ -48,6 +51,7 @@ mongoose.connect(connectionString).then(
 
 app.use("/users",userRouter)
 app.use("/students",studentRouter)
+app.use("/products",productRouter)
 
 
 

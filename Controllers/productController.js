@@ -14,7 +14,7 @@ export async function createProduct(req,res){
         const response = await product.save()
 
         res.json({
-            message :"Product created succesfully",
+            message :"Product created successfully",
             product : response
         })
     }catch(error){
@@ -23,6 +23,22 @@ export async function createProduct(req,res){
     }
 }
 
+export async function getProducts(req,res){
+    try{
+        if(isAdmin(req)){
+            const products = await Product.find();
+            return res.json(products)
+        }else{
+            const products = await Product.find({isAvailable:true});
+            return res.json(products)
+        }
+    }catch(error){
+        console.error("Error fetching products:",error);
+        return res.status(500).json({message : "Failed to fetch products"})
+    }
+}
+
+ 
 
 
 

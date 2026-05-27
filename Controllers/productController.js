@@ -38,7 +38,25 @@ export async function getProducts(req,res){
     }
 }
 
- 
 
+export async function deleteProduct(req,res){
+    if(!isAdmin(req)){
+        res.status(403).json({message :"Access denined Admin only"})
+        return;
+    }
 
+    try{
+        const productId = req.params.productId; 
+
+        await Product.deleteOne({
+            productId : productId
+        })
+        res.json({message : "Product deleted sucessfully"})
+    }catch(error){
+        console.error("Error deleting product:",error);
+        res.status(500).json({message:"Failed to delete products"})
+        return;
+    }
+
+}
 

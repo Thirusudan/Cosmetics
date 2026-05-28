@@ -49,9 +49,9 @@ mongoose.connect(connectionString).then(
      console.log("Failed to connect to the database")
 }) 
 
-app.use("/users",userRouter)
-app.use("/students",studentRouter)
-app.use("/products",productRouter)
+app.use("/api/users",userRouter)
+app.use("/api/students",studentRouter)
+app.use("/api/products",productRouter)
 
 
 

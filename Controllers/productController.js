@@ -85,6 +85,31 @@ export async function updateProduct(req,res){
     }
 }
 
+
+ export async function getProductsInfo(req,res){
+    try{
+        const productId = req.params.productId // 6
+        const product = await Product.findOne({productId :productId })  //7
+
+        if(product == null){
+            res.status(404).json({message:"Product not found"})
+            return;
+        }
+        if(isAdmin(req)){
+            res.json(product)
+        }else{
+            if(product.isAvailable){
+                res.json(product);
+            }else{
+                res.status(404).json({message : "Product is not available"})
+            }
+        }
+    }catch(error){
+      console.error("Error updating product:",error);
+        res.status(500).json({message:"Failed to update products"})
+        return
+    }
+ }
  
 
 //1 - read the product details from varibale data (reads the body)
@@ -92,4 +117,7 @@ export async function updateProduct(req,res){
 //3 - admin give a product id in put request and give other update details in the json ,url prodcut id(in the box) and product id in the json must be eqal (short version - the product id not allowed to update other details can be update)
 //4 - we have to give the product id when updating we creating 2nd function and using to the 4th fuction
 //5 - updated details we created in 1st function using to 5 
+
+//6 - when some one send the product Id and the productId  saved to variable of const productId
+//7 - ({productId-field in D :productId-value from URL })- goes to MongoDB → finds the product WHERE productId  returns FULL product details
 

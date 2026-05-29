@@ -5,6 +5,8 @@ import userRouter from "./routers/userRouter.js";
 import jwt from "jsonwebtoken"
 import studentRouter from "./routers/studentRouter.js";
 import productRouter from "./routers/productRouter.js";
+import dotenv from "dotenv"
+dotenv.config()
 
 const app= express()
 
@@ -16,7 +18,9 @@ app.use(
         const value = req.header("Authorization")
         if(value != null){
             const token = value .replace("Bearer ","")
-            jwt.verify(token,"cbc-6503",
+            jwt.verify(
+                token,
+                process.env.JWT_SECRET,  //2
             (err,decoded)=>{
                 if(decoded == null){
                     res.status(403).json(
@@ -38,8 +42,8 @@ app.use(
 }
 )
 
-const connectionString = "mongodb+srv://admin:123@cluster0.cagkpoc.mongodb.net/?appName=Cluster0"
- 
+const connectionString = process.env.MONGO_URI  //1 
+
 mongoose.connect(connectionString).then( 
     ()=>{
     console.log("Connected to database")
@@ -61,3 +65,5 @@ app.listen(5000,()=>{
     console.log("server started")
 })
 
+//1 - BEFORE IN THIS LINE HAVE THE MONGODB URL BUT THERE IS A PROBLEM WHEN WE SAVE GIT THE MONGO DB URL IS IN PUBLIC SO WE HAVE TO HIDE CREATE .env FOLDER AND THE PASTE THE URL TO .ENV AND IN THIS STEP WE HAVE TO USE dotenv LIBRARY AND THE dotenv.config()
+// 2 - 2ND ALSO SAME AS IN 1ST METHOD

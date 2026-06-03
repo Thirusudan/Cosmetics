@@ -68,7 +68,8 @@ dotenv.config();
                 res.json(
                     {
                         token : token,
-                        message:"Login succesfull"
+                        message:"Login succesfull",
+                        role:user.role,
                     })
             }else{
                 res.status(403).json( 

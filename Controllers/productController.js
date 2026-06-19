@@ -24,6 +24,7 @@ export async function createProduct(req,res){
 }
 
 export async function getProducts(req,res){
+    console.log("Fetching products")
     try{
         if(isAdmin(req)){
             const products = await Product.find();

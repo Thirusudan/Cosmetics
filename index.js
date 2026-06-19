@@ -7,8 +7,7 @@ import studentRouter from "./routers/studentRouter.js";
 import productRouter from "./routers/productRouter.js";
 import dotenv from "dotenv"
 import cors from "cors"
-dotenv.config()
-
+dotenv.config() 
 
 const app= express()
 

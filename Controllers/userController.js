@@ -80,7 +80,16 @@ dotenv.config();
         }
     })
  }
-
+// to identify the user name
+export function getUser(req,res){
+    if(req.user == null){
+        res.status(404).json({
+            message:"User not found"
+        })
+    }else{
+        res.json(req.user)
+    }
+}
 
 //3
  export function isAdmin(req){

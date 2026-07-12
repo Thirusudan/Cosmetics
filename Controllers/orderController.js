@@ -83,6 +83,10 @@ const latestOrder = await Order.find().sort({date : -1}).limit(1)
 
 
 export async function getOrders(req,res){
+
+    const page = parseInt(req.params.page) || 1;        // which page? default 1
+    const limit = parseInt(req.params.limit) || 10;    // how many per page? default 10
+
     if(req.user == null){
         res.status(401).json({message:"Please login to view orders "})
         return
@@ -90,12 +94,21 @@ export async function getOrders(req,res){
 
     try{
         if(req.user.role == "admin"){
-            const orders = await Order.find().sort({date : -1})
+       
+/*12*/  const orderCount = await Order.countDocuments(); 
+/*13*/  const totalPages = Math.ceil(orderCount / limit);  
+
+/*14*/  const orders = await Order.find().skip((page-1)*limit).limit(limit).sort({date:-1})
             res.json(orders)
         }else{
-            const orders = await Order.find({email: req.user.email}).sort({date : -1})
-            res.json(orders)
-        }
+/*15*/      const orderCount = await Order.countDocuments({email:req.user.email});
+/*16*/      const totalPages = Math.ceil(orderCount / limit);
+            const orders= await Order.find({email: req.user.email}).skip((page-1) * limit).limit(limit).sort({date:1}) 
+            res.json({
+                orders:orders,
+                totalPages:totalPages
+            })
+                }
     }catch(error){
         console.error("error fetching orders:",error)
         res.status(500).json({message:"failed to fetch order"})
@@ -118,5 +131,13 @@ export async function getOrders(req,res){
 9 -item array must be not null and must be an array
 10- searches MongoDB Products collection using the productId customer sent!(when customer send product Id it will check in mongodb, if not it will print "Invaild product ID)
 11 - total+=product.price * item.qty - i means currently total about price multiply itemqty
+12- counts TOTAL orders in MongoDB → example: 56 orders
+13-  Math.ceil(56 / 10) = 6 pages total
+14 -  page 1 → skip(0)  → show orders 1-10
+      page 2 → skip(10) → show orders 11-20
+      page 3 → skip(20) → show orders 21-30
+15 - counts only THIS customer's orders
+16 - same pagination but filtered by customer email onlY, filter by THIS logged in user's email only
+cannot see other customers orders
 */
 

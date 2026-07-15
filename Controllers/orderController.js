@@ -99,7 +99,10 @@ export async function getOrders(req,res){
 /*13*/  const totalPages = Math.ceil(orderCount / limit);  
 
 /*14*/  const orders = await Order.find().skip((page-1)*limit).limit(limit).sort({date:-1})
-            res.json(orders)
+            res.json({
+            orders:orders,
+            totalPages: totalPages,
+        })
         }else{
 /*15*/      const orderCount = await Order.countDocuments({email:req.user.email});
 /*16*/      const totalPages = Math.ceil(orderCount / limit);
@@ -108,7 +111,7 @@ export async function getOrders(req,res){
                 orders:orders,
                 totalPages:totalPages
             })
-                }
+                } 
     }catch(error){
         console.error("error fetching orders:",error)
         res.status(500).json({message:"failed to fetch order"})
@@ -133,9 +136,27 @@ export async function getOrders(req,res){
 11 - total+=product.price * item.qty - i means currently total about price multiply itemqty
 12- counts TOTAL orders in MongoDB → example: 56 orders
 13-  Math.ceil(56 / 10) = 6 pages total
+
 14 -  page 1 → skip(0)  → show orders 1-10
       page 2 → skip(10) → show orders 11-20
       page 3 → skip(20) → show orders 21-30
+
+[1..10]        [11..20]       [21..30]
+ └─page 1─┘     └─page 2─┘     └─page 3─┘
+   skip 0         skip 10        skip 20
+
+
+skip = (page - 1) x limit
+
+page 3, limit 10
+skip = (3 - 1) x 10
+skip = 2 x 10
+skip = 20   →  shows orders 21 to 30
+
+skip just means "how many orders to jump over before this page starts." You get that number by multiplying (page - 1) × limit — because every page before the current one is full of limit orders, so (page - 1) tells you how many full pages came before, and multiplying by limit tells you how many orders that adds up to.
+For page 3 with limit 10: 2 pages came before (page - 1 = 2), each holding 10 orders, so 2 × 10 = 20 orders need to be skipped — landing you exactly at order 21, which is where page 3 begins.
+
+
 15 - counts only THIS customer's orders
 16 - same pagination but filtered by customer email onlY, filter by THIS logged in user's email only
 cannot see other customers orders

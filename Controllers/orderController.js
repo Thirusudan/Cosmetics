@@ -120,7 +120,7 @@ export async function getOrders(req,res){
 
 }
 
-
+/*17*/
 export function updateOrder(req,res){
     if(isAdmin(req)){
         const orderId = req.params.orderId;
@@ -191,5 +191,27 @@ For page 3 with limit 10: 2 pages came before (page - 1 = 2), each holding 10 or
 15 - counts only THIS customer's orders
 16 - same pagination but filtered by customer email onlY, filter by THIS logged in user's email only
 cannot see other customers orders
+
+
+17-  Frontend: axios.put(".../api/orders/CBC00220", { status: "completed", notes: "..." })
+        ↓
+orderRouter.put("/:orderId", updateOrder)
+        ↓
+        (Express matches the URL, captures "CBC00220" into :orderId,
+         and calls updateOrder(req, res))
+        ↓
+Backend: isAdmin check passes
+        ↓
+orderId = req.params.orderId  → "CBC00220"  (this value came from the router match)
+status  = req.body.status     → "completed"
+notes   = req.body.notes      → "..."
+        ↓
+Order.findOneAndUpdate finds CBC00220, changes its status to "completed"
+        ↓
+Success → res.json({ message: "Order updated successfully", order: updatedOrder })
+        ↓
+Frontend: .then() branch of axios.put runs → toast.success(...) → setLoading(true)
+        ↓
+useEffect refetches → table shows CBC00220 as "completed"
 */
 

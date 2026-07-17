@@ -1,5 +1,6 @@
 import Order from "../models/order.js";
 import Product from "../models/product.js";
+import { isAdmin } from "./userController.js";
 
 export async function createOrder(req,res){
     try{
@@ -118,6 +119,36 @@ export async function getOrders(req,res){
     }
 
 }
+
+
+export function updateOrder(req,res){
+    if(isAdmin(req)){
+        const orderId = req.params.orderId;
+        const status = req.body.status;
+        const notes = req.body.notes
+
+        Order.findOneAndUpdate(
+            {orderID:orderId},
+            {status: status, notes : notes},
+            {new: true}
+        ).then(
+            (updatedOrder)=>{
+                if(updatedOrder){
+                    res.json({
+                        message : "Order updated successfully",
+                        order:updatedOrder,
+                    })
+                }else{
+                    res.status(404).json({message: "Order not found"})
+                }
+            }
+        ).catch((error)=>{
+            console.error("Error updating:" ,error)
+            res.status(500).json({message:"Failed to update order"})
+        })
+    }
+}
+
 
 
 

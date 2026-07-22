@@ -17,7 +17,8 @@ app.use(cors())
 
 app.use(
     (req,res,next)=>{
-        
+       
+    
         const value = req.header("Authorization")
         if(value != null){
             const token = value .replace("Bearer ","")
@@ -60,6 +61,7 @@ app.use("/api/users",userRouter)
 app.use("/api/students",studentRouter)
 app.use("/api/products",productRouter)
 app.use("/api/orders",orderRouter)
+
 
 
 

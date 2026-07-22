@@ -3,7 +3,22 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
 import axios from "axios";
+import nodemailer from "nodemailer"
+import OTP from "../models/otp.js";
+const pw = "bcriqmybpnhmoqem"
+
 dotenv.config();
+
+const transporter = nodemailer.createTransport({
+    host:"smtp.gmail.com",
+    port: 587,
+    secure:false,
+    auth:{
+
+        user:"thirusudan110@gmail.com",
+        pass:pw,
+    }
+})
 
  export function createUser(req,res){
     //1
@@ -180,8 +195,66 @@ export function getUser(req,res){
     }
 }
     
+export async function sendOTP(req,res){
+    const email = req.body.email
+    const otpCode = Math.floor(100000 + Math.random() * 900000);
+    //delete all otps from the email
+    try{
+         await OTP.deleteMany({email:email})        
+         const newOTP = new OTP({email:email, otp:otpCode}); 
+        await newOTP.save();
+
+        const message = {
+            from : "thirusudan110@gmail.com",
+            to:email,
+            subject : "Your OTP code",
+            text : `your OTP CODE IS ${otpCode}`, 
+        }
+        transporter.sendMail(message,(error,info)=>{
+            if(error){
+                console.error("Error sending email:", error);
+                res.status(500).json({message:"Failed to send OTP"})
+            }else{
+                console.log("Email sent:",info.response)
+                res.json({message:"OTP sent successfully"})
+            }
+        })
+    }catch(err){
+        console.error("sendOTP error:", err)
+        res.status(500).json({message:"Failed to delete previous OTPS"})
+    }
+}
+
+export async function resetPassword(req,res){
+    const email = req.body.email;
+    const newPassword = req.body.newPassword;
+    const otp = Number(req.body.otp); 
 
 
+    try{
+        const otpRecord = await OTP.findOne({ email: email, otp: otp });
+        if(!otpRecord){
+            return res.status(404).json({ message: "Invalid OTP" });
+        }
+
+        const user = await User.findOne({ email: email });
+        if(!user){
+            return res.status(404).json({ message: "User not found" });
+        }
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
+        await User.updateOne({ email: email }, { password: hashedPassword });
+        await OTP.deleteMany({ email: email });
+
+        res.json({ message: "Password reset successfully" });
+    }catch(err){
+        console.log(err)
+        res.status(500).json({ message: "Failed to reset password" });
+    }
+}
+
+
+
+//reset password and sendotp function are explained in frotendforgetpassword page
 
 
 /*

@@ -20,6 +20,7 @@ export async function createReview(req,res){
 }
 
 export async function getReview(req,res){
+    console.log("Fetching Reviews")
       try{
    const reviews = await Review.find().sort({ createdAt: -1 })
         res.json(reviews)

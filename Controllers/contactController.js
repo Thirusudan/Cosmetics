@@ -16,7 +16,7 @@ export async function createContact(req,res){
 
 export async function getContact(req,res){
     try{
-      const contacts = await Contact.find().sort({ createdAt: -1 })
+      const contacts = await Contact.find().sort({ date: -1 });
       res.json(contacts)
     }catch(error){
     console.log(error)

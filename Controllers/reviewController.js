@@ -44,11 +44,62 @@ export async function deleteReview(req,res){
     }
     res.json("Review deleted successuly")
      
-   }catch{
-    (err)
+   }catch(err){
      console.error(err)
      res.status(500).json({message: "Failed to delete review"})
    }
-
-
 }
+
+export async function replyToReview(req,res){
+     if(isAdmin(req)){
+    try{
+     const updated = await Review.findByIdAndUpdate(
+        req.params.id,{
+            reply:{
+                text: req.body.reply,
+                repliedAt : new Date()
+            }
+        },
+        { new: true }
+     )
+     if(!updated){
+        return res.status(404).json({message:"Review not found"})
+     }
+     res.json(updated)
+
+    }catch{
+     console.error(err)
+     res.status(500).json({message: "Failed to reply to review"})
+   }
+    }
+}
+
+export async function deleteReply(req,res){
+   if(isAdmin(req)){
+   try{
+       const deleted = await Review.findByIdAndUpdate(
+        req.params.id,
+        {
+            reply: {
+                text: null,
+                repliedAt: null
+            }
+        },
+        { new: true }
+    )
+    if(!deleted){
+        return res.status(404).json({messgae:"Reply Not found"})
+    }
+    res.json("Reply deleted successuly")
+     
+   }catch (error){
+     console.error(error)
+     res.status(500).json({message: "Failed to delete Reply"})
+   }
+}
+}
+
+  
+
+
+

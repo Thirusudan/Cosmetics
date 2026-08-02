@@ -21,9 +21,15 @@ const reviewSchema = new mongoose.Schema({
         type : String,
         required : true 
     }, 
+    
+    reply:{
+        text:{type:String,default:null},
+        repliedAt :{type:Date,default:null}
+    }
+    
 
 },{ timestamps: true }
 )
 
-const Review = mongoose.model("review",reviewSchema)
+const Review = mongoose.model("reviews",reviewSchema)
 export default Review;

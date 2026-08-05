@@ -21,6 +21,14 @@ const transporter = nodemailer.createTransport({
 })
 
  export function createUser(req,res){
+     const { firstName, lastName, email, password } = req.body;
+
+    if (!firstName || !lastName || !email || !password) {
+        return res.status(400).json({
+            message: "Please fill all fields"
+        });
+    }
+
     //1
    const passwordHash = bcrypt.hashSync(req.body.password,10)
 
@@ -38,7 +46,7 @@ const transporter = nodemailer.createTransport({
             message : "User created successfullly"
         })
     }).catch(()=>{
-        res.json({
+        res.status(400).json({
             message : "Failed to create user"
         })
     })

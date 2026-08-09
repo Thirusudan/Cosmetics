@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import userRouter from "./routers/userRouter.js";
 import jwt from "jsonwebtoken"
-import studentRouter from "./routers/studentRouter.js";
+
 import productRouter from "./routers/productRouter.js";
 import dotenv from "dotenv"
 import cors from "cors"
@@ -60,7 +60,6 @@ mongoose.connect(connectionString).then(
 }) 
 
 app.use("/api/users",userRouter)
-app.use("/api/students",studentRouter)
 app.use("/api/products",productRouter)
 app.use("/api/orders",orderRouter)
 app.use("/api/review",reviewRouter)
